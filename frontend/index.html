@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiet Mind — Cognitive Companion (v1)</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <main class="container">
+        <h1>Quiet Mind</h1>
+        <p class="subtitle">
+            A private space to unload thoughts.
+            <br><small>Experimental · Not therapy</small>
+        </p>
+
+        <textarea id="journalInput" placeholder="Write whatever is on your mind..." rows="6"></textarea>
+
+        <div class="actions">
+            <button id="submitBtn" type="button">Save Entry</button>
+            <button id="clearBtn" type="button" class="secondary">Clear</button>
+        </div>
+
+
+        <div id="result" class="hidden">
+            <h3>Reflection</h3>
+            <p><strong>Sentiment:</strong> <span id="sentimentLabel"></span></p>
+            <p><strong>Confidence:</strong> <span id="sentimentScore"></span></p>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
