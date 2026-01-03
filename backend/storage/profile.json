@@ -1,0 +1,9 @@
+{
+  "emotional_baseline": {
+    "POSITIVE": 3
+  },
+  "dominant_intents": {
+    "venting": 3
+  },
+  "total_entries": 3
+}

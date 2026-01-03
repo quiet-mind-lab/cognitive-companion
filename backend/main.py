@@ -1,14 +1,21 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import pipeline
 from fastapi.middleware.cors import CORSMiddleware
+from transformers import pipeline
 from sentence_transformers import SentenceTransformer
+from cognition.profile import build_weekly_profile
 import faiss
 import numpy as np
 from datetime import datetime
 import uuid
 import json
 import os
+
+# ---- Phase 2 cognition imports (future) ----
+# from cognition.trends import analyze_emotion_trends
+# from cognition.themes import extract_themes
+# from cognition.synthesis import synthesize_reflection
+
 
 # -------------------------
 # App setup
@@ -64,7 +71,7 @@ class JournalEntry(BaseModel):
     text: str
 
 # -------------------------
-# Cognitive helpers
+# Cognitive helpers (Phase 1 stays)
 # -------------------------
 def detect_mixed_emotion(text: str) -> bool:
     return any(k in text.lower() for k in ["but", "however", "although", "yet"])
@@ -88,9 +95,23 @@ def generate_reflection(intent: str, sentiment: dict) -> str:
         return "There’s something positive here. Notice what led to this feeling."
     return "Thanks for taking a moment to write this down."
 
+# -------------------------
+# Persistence helpers
+# -------------------------
 def load_memory():
-    with open(MEMORY_FILE, "r") as f:
-        return json.load(f)
+    if not os.path.exists(MEMORY_FILE):
+        return []
+
+    try:
+        with open(MEMORY_FILE, "r") as f:
+            content = f.read().strip()
+            if not content:
+                return []
+            return json.loads(content)
+    except Exception as e:
+        print("⚠️ Memory load failed, resetting:", e)
+        return []
+
 
 def save_memory(data):
     with open(MEMORY_FILE, "w") as f:
@@ -113,14 +134,13 @@ def journal_text(entry: JournalEntry):
         "id": str(uuid.uuid4()),
         "type": "text",
         "content": entry.text,
-        "embedding": embedding.tolist(),   # 🔥 STORED
+        "embedding": embedding.tolist(),
         "sentiment": sentiment_result,
         "intent": intent,
         "reflection": reflection,
         "timestamp": datetime.utcnow().isoformat()
     }
 
-    # ---- Persist ----
     memory = load_memory()
     memory.append(record)
     save_memory(memory)
@@ -129,10 +149,12 @@ def journal_text(entry: JournalEntry):
     faiss.write_index(index, FAISS_INDEX_FILE)
 
     response = record.copy()
-    response.pop("embedding", None)
+    response.pop("embedding")
     return response
 
-
+# -------------------------
+# Semantic Memory Search
+# -------------------------
 @app.post("/memory/semantic-search")
 def semantic_search(query: JournalEntry, top_k: int = 3):
     if index.ntotal == 0:
@@ -144,18 +166,47 @@ def semantic_search(query: JournalEntry, top_k: int = 3):
     memory = load_memory()
 
     results = []
-    for idx in indices[0]:
+    for rank, idx in enumerate(indices[0]):
         if 0 <= idx < len(memory):
             results.append({
                 "id": memory[idx]["id"],
                 "content": memory[idx]["content"],
-                "score": float(distances[0][list(indices[0]).index(idx)]),
+                "score": float(distances[0][rank]),
                 "timestamp": memory[idx]["timestamp"]
             })
 
     return results
 
+# -------------------------
+# Recent Memory
+# -------------------------
 @app.get("/memory/recent")
 def get_recent_entries(limit: int = 5):
     memory = load_memory()
     return memory[-limit:]
+
+# -------------------------
+# 🧠 Phase 2 Cognitive Summary
+# -------------------------
+# @app.get("/cognition/summary")
+# def cognition_summary(days: int = 7):
+#     memory = load_memory()
+
+#     trends = analyze_emotion_trends(memory, days)
+#     themes = extract_themes(memory)
+#     profile = update_profile(memory)
+
+#     reflection = synthesize_reflection(profile, trends, themes)
+
+#     return {
+#         "emotional_trends": trends,
+#         "themes": themes,
+#         "profile": profile,   
+#         "reflection": reflection
+#     }
+
+@app.get("/cognition/weekly")
+def weekly_cognition(days: int = 7):
+    memory = load_memory()
+    return build_weekly_profile(memory, days)
+
