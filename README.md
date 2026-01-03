@@ -16,27 +16,27 @@ This project emphasizes **self-reflection** over therapy or diagnosis.
 
 | ✅ What this project DOES | ❌ What this project does NOT do |
 | :--- | :--- |
-| **Accepts** daily journaling (Text) | **Therapy** or Counseling |
-| **Detects** sentiment and intent in entries | **Medical or psychological diagnosis** |
+| **Accepts** daily journaling (text) | **Therapy** or Counseling |
+| **Detects** sentiment (POSITIVE / NEGATIVE / MIXED) and intent | **Medical or psychological diagnosis** |
 | **Stores** entries privately & locally | **Chatbot roleplay** |
-| **Highlights** recurring themes and insights | **Providing advice or treatment** |
+| **Highlights** recurring themes and weekly insights | **Providing advice or treatment** |
 
 ---
 
 ## 💎 Core Principle
 
 > **"Insight over advice."**  
-> We focus on helping users observe their thoughts clearly instead of providing prescriptive solutions. Cognitive Companion does not “fix” you; it helps you see yourself.
+> Cognitive Companion helps users observe their thoughts clearly rather than providing prescriptive solutions. It does not “fix” you; it helps you see yourself.
 
 ---
 
 ## 🛠 Tech Stack
 
-* **Frontend:** HTML5, CSS3, Vanilla JavaScript
-* **Backend:** Python (FastAPI)
-* **AI Engine:** Embeddings + Sentiment & Intent Analysis
-* **Storage:** Local JSON/Index Files (`storage/memory.index`) for semantic search
-* **Libraries:** `numpy`, `pydantic`, `fastapi`, `uvicorn`, `scikit-learn` (for embeddings), `textblob` (optional for lightweight sentiment)
+* **Frontend:** HTML5, CSS3, Vanilla JavaScript  
+* **Backend:** Python (FastAPI)  
+* **AI Engine:** HuggingFace `transformers` (sentiment) + `sentence-transformers` (embeddings)  
+* **Storage:** Local JSON + FAISS index (`storage/memory.index`) for semantic search  
+* **Libraries:** `numpy`, `pydantic`, `fastapi`, `uvicorn`, `faiss-cpu`, `sentence-transformers`
 
 ---
 
@@ -63,46 +63,49 @@ This project emphasizes **self-reflection** over therapy or diagnosis.
 
 ---
 
-## 📦 Features
+## 📦 Features (Currently Implemented)
 
-- Daily journaling via web interface  
+- Daily journaling via web interface (`/journal/text`)  
 - Sentiment analysis (POSITIVE / NEGATIVE / MIXED)  
-- Intent detection (e.g., venting, reflection)  
+- Intent detection (venting, reaction, reflection, affirmation)  
 - UUID-based entry tracking  
-- Local memory storage with semantic search  
-- Reflection messages generated for each entry  
-- Semantic search by text queries (`/memory/semantic-search`)  
-- Retrieve recent entries (`/memory/recent`)
+- Local memory storage with **semantic search** (`/memory/semantic-search`)  
+- Retrieve recent entries (`/memory/recent`)  
+- Weekly cognition summary (`/cognition/weekly`) with emotional stability, dominant intents, entry count, and confidence score  
+
+**Phase 2 features (planned but partially implemented in backend modules):**  
+- Emotion trends, theme extraction, and reflection synthesis  
 
 ---
 
 ## 🗺 Roadmap
 
-**Phase 1: Foundation (Current)**
-- 🟢 Basic Text Journaling Interface
-- 🟢 Sentiment & Intent Analysis
-- 🟢 Semantic Memory Storage (`memory.index`)
-- ⚪ Dark Mode UI Polish
+**Phase 1: Foundation (Completed/Current)**
+- 🟢 Journaling Interface & API endpoints  
+- 🟢 Sentiment & Intent Analysis  
+- 🟢 Local Memory Storage (`memory.json` + `memory.index`)  
+- 🟢 Weekly Summary (`/cognition/weekly`)  
+- ⚪ Frontend UI polish  
 
-**Phase 2: Pattern Recognition**
-- ⚪ Weekly Summary Generator
-- ⚪ Keyword Extraction & Trending Thoughts
-- ⚪ “On this day” Reflection
+**Phase 2: Pattern Recognition (Backend modules exist, API endpoints in progress)**
+- ⚪ Emotional trends over time  
+- ⚪ Keyword & theme extraction  
+- ⚪ Reflection synthesis  
 
 **Phase 3: Multi-Modal (Future)**
-- ⚪ Voice Notes (Speech-to-Text)
-- ⚪ Screenshot Analysis (OCR for chats/notes)
-- ⚪ Adaptive Insights (AI-driven trends over time)
+- ⚪ Voice Notes (Speech-to-Text)  
+- ⚪ Screenshot Analysis (OCR for notes)  
+- ⚪ Adaptive Insights (AI-driven trends over time)  
 
 ---
 
 ## 🔒 Ethics & Privacy
 
-- User data is **private by default**  
-- No data is sent to third-party AI servers  
-- All memories are stored locally in `storage/memory.index`  
-- You retain **full ownership** of your data  
+- All user data is **private by default**  
+- No data is sent to external AI servers  
+- Memories are stored locally (`memory.json` + `memory.index`)  
+- Users retain **full ownership** of their data  
 
 ---
 
-*Created with ❤️ by [Quiet Mind Labs](https://github.com/quiet-mind-lab) — Founder: [Deepayan Thakur](https://github.com/Deepayan-Thakur).*
+*Created with ❤️ by [Quiet Mind Labs](https://github.com/quiet-mind-lab) — Founder: [Deepayan Thakur](https://github.com/Deepayan-Thakur)*
